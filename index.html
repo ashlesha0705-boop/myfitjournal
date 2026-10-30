@@ -1,0 +1,1269 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Fit Journal</title>
+    <style>
+      :root {
+        --bg: #f4efe9;
+        --bg-2: #f0e5d7;
+        --panel: rgba(255,255,255,0.7);
+        --panel-strong: rgba(255,255,255,0.9);
+        --card: #f8f4ef;
+        --line: rgba(27,24,20,0.09);
+        --text: #1a1714;
+        --muted: #6a615a;
+        --sage: #55715b;
+        --sage-deep: #2d4631;
+        --gold: #d2b06a;
+        --gold-soft: #f3d9a7;
+        --rose: #e9c9b4;
+        --peach: #f3d6ac;
+        --danger: #c45d52;
+        --shadow: 0 18px 40px rgba(44,33,20,0.08);
+      }
+
+      * { box-sizing: border-box; }
+      html, body { margin: 0; min-height: 100%; }
+      body {
+        font-family: Inter, "Segoe UI", sans-serif;
+        background:
+          radial-gradient(circle at top left, rgba(243,190,132,0.18), transparent 24%),
+          radial-gradient(circle at bottom right, rgba(85,113,91,0.12), transparent 28%),
+          var(--bg);
+        color: var(--text);
+      }
+
+      .container {
+        width: min(1280px, calc(100% - 24px));
+        margin: 0 auto;
+        padding: 24px 0 42px;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        background: rgba(255,255,255,0.46);
+        border: 1px solid var(--line);
+        border-radius: 28px;
+        box-shadow: var(--shadow);
+        padding: 18px 18px;
+        backdrop-filter: blur(12px);
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        font-size: 0.72rem;
+      }
+
+      .brand-mark {
+        width: 38px;
+        height: 38px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, var(--sage), #9bb89d);
+        position: relative;
+        box-shadow: inset 0 0 0 1px rgba(255,255,255,0.8);
+      }
+
+      .brand-mark::before {
+        content: "";
+        position: absolute;
+        inset: 8px;
+        border-radius: 50%;
+        border: 3px solid rgba(255,255,255,0.9);
+      }
+
+      .topbar-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .pill {
+        padding: 10px 12px;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: rgba(255,255,255,0.46);
+        color: var(--muted);
+        font-size: 0.72rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .btn {
+        border: none;
+        cursor: pointer;
+        border-radius: 999px;
+        padding: 12px 18px;
+        font-weight: 700;
+        letter-spacing: 0.01em;
+        transition: transform 0.15s ease, opacity 0.15s ease;
+      }
+
+      .btn:hover { transform: translateY(-1px); }
+      .btn.primary {
+        background: linear-gradient(135deg, var(--sage) 0%, var(--sage-deep) 100%);
+        color: white;
+        box-shadow: 0 12px 22px rgba(45,70,49,0.22);
+      }
+
+      .btn.secondary {
+        background: rgba(255,255,255,0.56);
+        border: 1px solid var(--line);
+        color: var(--text);
+      }
+
+      .btn.danger {
+        background: rgba(196,93,82,0.08);
+        border: 1px solid rgba(196,93,82,0.25);
+        color: var(--danger);
+      }
+
+      .main-grid {
+        display: grid;
+        grid-template-columns: 1.55fr 0.95fr;
+        gap: 22px;
+        margin-top: 22px;
+      }
+
+      .stack {
+        display: grid;
+        gap: 22px;
+      }
+
+      .panel {
+        background: rgba(255,255,255,0.58);
+        border: 1px solid var(--line);
+        border-radius: 30px;
+        box-shadow: var(--shadow);
+        padding: 20px;
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: 1.4fr 0.8fr;
+        gap: 20px;
+        background: linear-gradient(135deg, rgba(255,255,255,0.72), rgba(246,236,227,0.9));
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: rgba(210,176,106,0.18);
+        color: #7c6438;
+        font-size: 0.66rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        font-weight: 700;
+        margin-bottom: 16px;
+      }
+
+      .eyebrow::before {
+        content: "";
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--gold);
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(2.4rem, 4.5vw, 4.2rem);
+        letter-spacing: -0.08em;
+        line-height: 0.96;
+      }
+
+      .subtitle {
+        margin: 14px 0 0;
+        color: var(--muted);
+        line-height: 1.75;
+        font-size: 1.02rem;
+        max-width: 560px;
+      }
+
+      .stats-row {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(90px, 1fr));
+        gap: 12px;
+        margin-top: 22px;
+      }
+
+      .metric {
+        background: rgba(255,255,255,0.68);
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        padding: 14px 12px;
+      }
+
+      .metric strong {
+        display: block;
+        font-size: 1.45rem;
+        letter-spacing: -0.05em;
+      }
+
+      .metric span {
+        display: block;
+        margin-top: 6px;
+        color: var(--muted);
+        font-size: 0.68rem;
+        letter-spacing: 0.09em;
+        text-transform: uppercase;
+      }
+
+      .hero-visual {
+        position: relative;
+        min-height: 250px;
+        border-radius: 24px;
+        background: linear-gradient(145deg, #ecdfcb, #f6f0eb);
+        overflow: hidden;
+      }
+
+      .hero-ring {
+        position: absolute;
+        width: 220px;
+        height: 220px;
+        border-radius: 50%;
+        border: 1px solid rgba(45,70,49,0.12);
+        left: 50%;
+        top: 16px;
+        transform: translateX(-50%);
+      }
+
+      .hero-ring::before {
+        content: "";
+        position: absolute;
+        inset: 28px;
+        border-radius: 50%;
+        background: linear-gradient(160deg, rgba(255,255,255,0.78), rgba(255,255,255,0.16));
+        border: 1px solid rgba(45,70,49,0.08);
+      }
+
+      .hero-score {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+      }
+
+      .hero-score strong {
+        display: block;
+        font-size: 4rem;
+        line-height: 1;
+        letter-spacing: -0.08em;
+      }
+
+      .hero-score span {
+        color: var(--muted);
+        font-size: 0.7rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      .tiny-badges {
+        position: absolute;
+        left: 18px;
+        right: 18px;
+        bottom: 18px;
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .tiny-badge {
+        background: rgba(255,255,255,0.72);
+        border: 1px solid rgba(0,0,0,0.04);
+        border-radius: 999px;
+        padding: 8px 10px;
+        color: var(--muted);
+        font-size: 0.72rem;
+      }
+
+      .panel-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 18px;
+      }
+
+      .panel-header h3 {
+        margin: 0;
+        font-size: 1rem;
+      }
+
+      .panel-chip {
+        font-size: 0.68rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      .resource-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .resource-card {
+        background: rgba(255,255,255,0.5);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 12px 12px;
+      }
+
+      .resource-card strong {
+        display: block;
+        font-size: 0.96rem;
+      }
+
+      .resource-card p {
+        margin: 6px 0 0;
+        color: var(--muted);
+        font-size: 0.79rem;
+        line-height: 1.5;
+      }
+
+      .tiny-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        align-items: center;
+        margin-top: 20px;
+      }
+
+      .tiny-progress {
+        flex: 1;
+        height: 10px;
+        background: rgba(83,113,91,0.08);
+        border-radius: 999px;
+        overflow: hidden;
+        border: 1px solid rgba(83,113,91,0.15);
+      }
+
+      .tiny-progress > span {
+        display: block;
+        height: 100%;
+        width: 0;
+        background: linear-gradient(90deg, var(--sage) 0%, var(--gold) 100%);
+        border-radius: inherit;
+      }
+
+      .tracker-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(110px, 1fr));
+        gap: 12px;
+      }
+
+      .tracker-card {
+        background: rgba(255,255,255,0.52);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 14px 10px;
+      }
+
+      .tracker-card strong {
+        display: block;
+        font-size: 1.48rem;
+        letter-spacing: -0.06em;
+      }
+
+      .tracker-card span {
+        display: block;
+        margin-top: 6px;
+        color: var(--muted);
+        font-size: 0.68rem;
+        letter-spacing: 0.09em;
+        text-transform: uppercase;
+      }
+
+      .progress-box {
+        margin-top: 12px;
+      }
+
+      .progress-meta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        margin-bottom: 8px;
+        color: var(--muted);
+        font-size: 0.78rem;
+      }
+
+      .progress-bar {
+        width: 100%;
+        height: 14px;
+        border-radius: 999px;
+        background: rgba(83,113,91,0.08);
+        overflow: hidden;
+        border: 1px solid rgba(83,113,91,0.12);
+      }
+
+      .progress-bar > span {
+        display: block;
+        width: 0;
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, var(--sage), var(--gold));
+      }
+
+      .macro-grid {
+        display: grid;
+        gap: 12px;
+        margin-top: 16px;
+      }
+
+      .macro-line {
+        display: grid;
+        gap: 6px;
+      }
+
+      .macro-label {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+        font-size: 0.8rem;
+        color: var(--muted);
+      }
+
+      .macro-line .progress-bar { height: 10px; }
+
+      .water-box {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(42px, 1fr));
+        gap: 8px;
+        margin-top: 16px;
+      }
+
+      .glass {
+        width: 100%;
+        aspect-ratio: 0.8;
+        border-radius: 14px 14px 16px 16px;
+        border: 1px solid rgba(83,113,91,0.2);
+        background: rgba(157, 209, 255, 0.15);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .glass::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 10%;
+        width: 80%;
+        height: 10px;
+        background: rgba(255,255,255,0.5);
+        border-radius: 999px;
+      }
+
+      .glass.active {
+        background: linear-gradient(180deg, rgba(100,170,255,0.36), rgba(72,120,200,0.18));
+        box-shadow: inset 0 0 0 1px rgba(77,111,171,0.14);
+      }
+
+      .water-actions {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        margin-top: 16px;
+      }
+
+      .button-row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .section-title {
+        margin: 0;
+        font-size: 1rem;
+      }
+
+      .modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(22,18,14,0.5);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+        z-index: 30;
+      }
+
+      .modal-backdrop.open { display: flex; }
+
+      .modal {
+        width: min(560px, 100%);
+        background: rgba(255,255,255,0.94);
+        border: 1px solid var(--line);
+        border-radius: 28px;
+        box-shadow: 0 30px 70px rgba(0,0,0,0.18);
+        padding: 22px;
+      }
+
+      .modal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 16px;
+      }
+
+      .modal-header h2 {
+        margin: 0;
+        font-size: 1.35rem;
+        letter-spacing: -0.04em;
+      }
+
+      .close-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: 1px solid var(--line);
+        background: rgba(255,255,255,0.7);
+        cursor: pointer;
+      }
+
+      .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+
+      .field {
+        display: grid;
+        gap: 8px;
+      }
+
+      label {
+        font-size: 0.7rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      input, select {
+        width: 100%;
+        border: 1px solid var(--line);
+        background: rgba(255,255,255,0.64);
+        border-radius: 14px;
+        padding: 12px 13px;
+        font: inherit;
+        color: var(--text);
+      }
+
+      .modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 18px;
+      }
+
+      .log-grid {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 22px;
+      }
+
+      .logger-box {
+        display: grid;
+        gap: 14px;
+      }
+
+      .log-row {
+        display: grid;
+        grid-template-columns: 1fr 120px;
+        gap: 10px;
+      }
+
+      .journal {
+        height: 300px;
+        overflow: auto;
+        display: grid;
+        gap: 10px;
+        padding-right: 6px;
+      }
+
+      .journal-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        background: rgba(255,255,255,0.5);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 12px 12px 12px 14px;
+      }
+
+      .journal-main strong {
+        display: block;
+        font-size: 0.96rem;
+      }
+
+      .journal-main span {
+        display: block;
+        color: var(--muted);
+        font-size: 0.75rem;
+        margin-top: 4px;
+      }
+
+      .journal-meta {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .macro-tag {
+        padding: 6px 8px;
+        border-radius: 999px;
+        background: rgba(83,113,91,0.08);
+        border: 1px solid rgba(83,113,91,0.16);
+        color: var(--sage-deep);
+        font-weight: 700;
+        font-size: 0.67rem;
+      }
+
+      .delete-btn {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        border: 1px solid rgba(196,93,82,0.18);
+        background: rgba(196,93,82,0.06);
+        color: var(--danger);
+        cursor: pointer;
+        font-weight: 700;
+      }
+
+      .section {
+        display: grid;
+        gap: 12px;
+      }
+
+      @media (max-width: 980px) {
+        .main-grid,
+        .log-grid,
+        .hero {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .stats-row,
+        .tracker-grid,
+        .resource-grid,
+        .form-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .topbar {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .topbar-actions {
+          width: 100%;
+          justify-content: space-between;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header class="topbar">
+        <div class="brand">
+          <div class="brand-mark"></div>
+          <span>MyFitJournal</span>
+        </div>
+        <div class="topbar-actions">
+          <div class="pill">Daily dashboard</div>
+          <button class="btn secondary" id="openTargetModal">Target calculator</button>
+          <button class="btn primary">Log workout</button>
+        </div>
+      </header>
+
+      <main class="main-grid">
+        <section class="stack">
+          <div class="panel hero">
+            <div>
+              <div class="eyebrow">Fitness momentum</div>
+              <h1>Rise with routine.</h1>
+              <p class="subtitle">
+                Personalised progress that fits real life: meals, workouts, hydration, recovery,
+                and calorie planning built around your daily rhythm.
+              </p>
+
+              <div class="stats-row">
+                <div class="metric">
+                  <strong id="metricSteps">8.1k</strong>
+                  <span>Steps</span>
+                </div>
+                <div class="metric">
+                  <strong id="metricWorkout">42m</strong>
+                  <span>Workout</span>
+                </div>
+                <div class="metric">
+                  <strong id="metricGoal">78%</strong>
+                  <span>Goal hit</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="hero-visual">
+              <div class="hero-ring"></div>
+              <div class="hero-score">
+                <strong id="dailyScore">72</strong>
+                <span>Daily score</span>
+              </div>
+              <div class="tiny-badges">
+                <div class="tiny-badge" id="tinyBadgeOne">+1.7 kg</div>
+                <div class="tiny-badge" id="tinyBadgeTwo">Hydrated</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">
+              <h3>Adaptive fitness mode</h3>
+              <div class="panel-chip">Real life</div>
+            </div>
+
+            <div class="resource-grid">
+              <div class="resource-card">
+                <strong>Office day</strong>
+                <p>High focus, balanced lunch, 30-minute strength movement, and protein timing.</p>
+              </div>
+              <div class="resource-card">
+                <strong>Busy day</strong>
+                <p>Short efficient workout, simple meals, and 3 movement breaks to keep momentum.</p>
+              </div>
+              <div class="resource-card">
+                <strong>Low-energy</strong>
+                <p>Gentle mobility, hydration, and nourishment without guilt or pressure.</p>
+              </div>
+              <div class="resource-card">
+                <strong>Travel day</strong>
+                <p>Portable protein, hydration checks, and short activity blocks while moving.</p>
+              </div>
+            </div>
+
+            <div class="tiny-row">
+              <div style="font-weight: 700;">Consistency</div>
+              <div class="tiny-progress"><span id="consistencyFill"></span></div>
+            </div>
+          </div>
+        </section>
+
+        <aside class="stack">
+          <div class="panel">
+            <div class="panel-header">
+              <h3>Daily tracking</h3>
+              <div class="panel-chip">Today</div>
+            </div>
+
+            <div class="tracker-grid">
+              <div class="tracker-card">
+                <strong id="netCalories">0</strong>
+                <span>Net kcal</span>
+              </div>
+              <div class="tracker-card">
+                <strong id="macroValue">0%</strong>
+                <span>Macro goal</span>
+              </div>
+              <div class="tracker-card">
+                <strong id="waterCount">0/8</strong>
+                <span>Water</span>
+              </div>
+            </div>
+
+            <div class="progress-box">
+              <div class="progress-meta">
+                <span>Calorie progress</span>
+                <strong id="calorieProgressText">0% of cap</strong>
+              </div>
+              <div class="progress-bar"><span id="calorieProgressBar"></span></div>
+            </div>
+
+            <div class="macro-grid">
+              <div class="macro-line">
+                <div class="macro-label"><span>Protein</span><strong id="proteinMacroText">0/0g</strong></div>
+                <div class="progress-bar"><span id="proteinMacroBar"></span></div>
+              </div>
+              <div class="macro-line">
+                <div class="macro-label"><span>Carbs</span><strong id="carbsMacroText">0/0g</strong></div>
+                <div class="progress-bar"><span id="carbsMacroBar"></span></div>
+              </div>
+              <div class="macro-line">
+                <div class="macro-label"><span>Fats</span><strong id="fatsMacroText">0/0g</strong></div>
+                <div class="progress-bar"><span id="fatsMacroBar"></span></div>
+              </div>
+            </div>
+
+            <div class="progress-box">
+              <div class="progress-meta">
+                <span>Water intake</span>
+                <strong id="waterText">0 glasses</strong>
+              </div>
+              <div class="water-box" id="waterGlassBox"></div>
+              <div class="water-actions">
+                <button class="btn secondary" id="decreaseWaterBtn">- 1 glass</button>
+                <button class="btn primary" id="increaseWaterBtn">+ 1 glass</button>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </main>
+
+      <div class="log-grid" style="margin-top: 22px;">
+        <div class="panel section">
+          <div class="panel-header">
+            <h3>Regional diet database</h3>
+            <div class="panel-chip">Food log</div>
+          </div>
+
+          <div class="logger-box">
+            <div class="field">
+              <label for="foodSelect">Choose food item</label>
+              <select id="foodSelect"></select>
+            </div>
+            <div class="button-row">
+              <button class="btn primary" id="addFoodBtn">Add food</button>
+            </div>
+          </div>
+
+          <div class="logger-box" style="margin-top: 14px;">
+            <div class="field">
+              <label for="beverageSelect">Beverages</label>
+              <select id="beverageSelect">
+                <option value="masala-chai">Masala Chai</option>
+                <option value="filter-coffee">Filter Coffee</option>
+                <option value="cold-coffee">Cafe-Style Cold Coffee</option>
+                <option value="sugarcane-juice">Sugarcane Juice</option>
+                <option value="sweet-lassi">Sweet Lassi</option>
+              </select>
+            </div>
+            <div class="button-row">
+              <button class="btn secondary" id="addBeverageBtn">Add beverage</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel section">
+          <div class="panel-header">
+            <h3>Workout logger</h3>
+            <div class="panel-chip">Burn estimate</div>
+          </div>
+
+          <div class="logger-box">
+            <div class="field">
+              <label for="workoutSelect">Workout type</label>
+              <select id="workoutSelect">
+                <option value="Yoga">Yoga</option>
+                <option value="Running">Running</option>
+                <option value="Walking">Walking</option>
+                <option value="Gym">Gym</option>
+                <option value="Cycling">Cycling</option>
+                <option value="Cricket">Cricket</option>
+              </select>
+            </div>
+
+            <div class="log-row">
+              <div class="field">
+                <label for="durationInput">Duration (minutes)</label>
+                <input id="durationInput" type="number" min="5" max="240" value="30" />
+              </div>
+              <div class="field">
+                <label for="calcBurn">Burned</label>
+                <input id="calcBurn" type="text" value="0 kcal" readonly />
+              </div>
+            </div>
+
+            <div class="button-row">
+              <button class="btn primary" id="addWorkoutBtn">Subtract workout</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel" style="margin-top: 22px;">
+        <div class="panel-header">
+          <h3>Daily journal</h3>
+          <div class="panel-chip">Entries</div>
+        </div>
+        <div class="journal" id="journalList"></div>
+      </div>
+    </div>
+
+    <div class="modal-backdrop" id="targetModal">
+      <div class="modal">
+        <div class="modal-header">
+          <h2>Target calculator</h2>
+          <button class="close-btn" id="closeTargetModal" aria-label="Close">×</button>
+        </div>
+
+        <div class="form-grid">
+          <div class="field">
+            <label for="targetWeightInput">Target weight (kg)</label>
+            <input id="targetWeightInput" type="number" min="25" max="200" step="0.5" value="62" />
+          </div>
+          <div class="field">
+            <label for="calorieCapInput">Daily calorie cap</label>
+            <input id="calorieCapInput" type="number" min="1200" max="4000" step="50" value="2100" />
+          </div>
+          <div class="field">
+            <label for="proteinGoalInput">Protein goal (g)</label>
+            <input id="proteinGoalInput" type="number" min="30" max="300" step="5" value="140" />
+          </div>
+          <div class="field">
+            <label for="carbGoalInput">Carbs goal (g)</label>
+            <input id="carbGoalInput" type="number" min="50" max="400" step="5" value="220" />
+          </div>
+          <div class="field" style="grid-column: 1 / -1;">
+            <label for="fatGoalInput">Fats goal (g)</label>
+            <input id="fatGoalInput" type="number" min="20" max="200" step="5" value="60" />
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn secondary" id="cancelTargetModal">Cancel</button>
+          <button class="btn primary" id="saveTargetModal">Save targets</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const foodDatabase = [
+        { name: 'Butter Chicken', group: 'North Indian Non-Veg', calories: 420, protein: 31, carbs: 14, fats: 22 },
+        { name: 'Kadhai Paneer', group: 'North Indian Veg', calories: 340, protein: 18, carbs: 15, fats: 24 },
+        { name: 'Chole Bhature', group: 'North Indian Veg', calories: 480, protein: 17, carbs: 48, fats: 21 },
+        { name: 'Dal Makhani', group: 'North Indian Veg', calories: 310, protein: 15, carbs: 24, fats: 15 },
+        { name: 'Naan', group: 'North Indian Veg', calories: 220, protein: 7, carbs: 35, fats: 5 },
+        { name: 'Tandoori Roti', group: 'North Indian Veg', calories: 160, protein: 5, carbs: 28, fats: 3 },
+        { name: 'Masala Dosa', group: 'South Indian Veg', calories: 300, protein: 8, carbs: 34, fats: 10 },
+        { name: 'Idli with Sambhar', group: 'South Indian Veg', calories: 260, protein: 8, carbs: 46, fats: 4 },
+        { name: 'Medu Vada', group: 'South Indian Veg', calories: 210, protein: 7, carbs: 20, fats: 9 },
+        { name: 'Rava Upma', group: 'South Indian Veg', calories: 270, protein: 8, carbs: 36, fats: 9 },
+        { name: 'Fish Curry', group: 'South Indian Non-Veg', calories: 290, protein: 25, carbs: 11, fats: 16 },
+        { name: 'Tandoori Chicken', group: 'Core Meats', calories: 280, protein: 36, carbs: 4, fats: 10 },
+        { name: 'Mutton Rogan Josh', group: 'Core Meats', calories: 410, protein: 28, carbs: 15, fats: 23 },
+        { name: 'Egg Bhurji', group: 'Core Meats', calories: 220, protein: 18, carbs: 3, fats: 15 },
+        { name: 'Paneer Bhurji', group: 'Core Veg', calories: 260, protein: 20, carbs: 8, fats: 17 },
+        { name: 'Mixed Veg Thali', group: 'Core Veg', calories: 480, protein: 22, carbs: 48, fats: 17 },
+        { name: 'Chicken Biryani', group: 'Core Meats', calories: 520, protein: 29, carbs: 52, fats: 18 }
+      ];
+
+      const beverageMap = {
+        'masala-chai': { label: 'Masala Chai', calories: 70, protein: 2, carbs: 10, fats: 2 },
+        'filter-coffee': { label: 'Filter Coffee', calories: 80, protein: 3, carbs: 10, fats: 3 },
+        'cold-coffee': { label: 'Cafe-Style Cold Coffee', calories: 210, protein: 5, carbs: 22, fats: 8 },
+        'sugarcane-juice': { label: 'Sugarcane Juice', calories: 180, protein: 0, carbs: 45, fats: 0 },
+        'sweet-lassi': { label: 'Sweet Lassi', calories: 240, protein: 9, carbs: 28, fats: 7 }
+      };
+
+      const workoutMet = {
+        Yoga: 3,
+        Running: 9.8,
+        Walking: 3.5,
+        Gym: 6.5,
+        Cycling: 7.5,
+        Cricket: 6.0
+      };
+
+      const state = {
+        targetWeight: 62,
+        calorieCap: 2100,
+        goals: { protein: 140, carbs: 220, fats: 60 },
+        waterGlasses: 4,
+        entries: [
+          { id: crypto.randomUUID(), type: 'food', label: 'Dal Makhani', calories: 310, protein: 15, carbs: 24, fats: 15 },
+          { id: crypto.randomUUID(), type: 'food', label: 'Tandoori Roti', calories: 160, protein: 5, carbs: 28, fats: 3 },
+          { id: crypto.randomUUID(), type: 'beverage', label: 'Filter Coffee', calories: 80, protein: 3, carbs: 10, fats: 3 },
+          { id: crypto.randomUUID(), type: 'workout', label: 'Walking', calories: -160, protein: 0, carbs: 0, fats: 0 }
+        ]
+      };
+
+      const els = {
+        foodSelect: document.getElementById('foodSelect'),
+        beverageSelect: document.getElementById('beverageSelect'),
+        workoutSelect: document.getElementById('workoutSelect'),
+        durationInput: document.getElementById('durationInput'),
+        calcBurn: document.getElementById('calcBurn'),
+        targetModal: document.getElementById('targetModal'),
+        openTargetModal: document.getElementById('openTargetModal'),
+        closeTargetModal: document.getElementById('closeTargetModal'),
+        cancelTargetModal: document.getElementById('cancelTargetModal'),
+        saveTargetModal: document.getElementById('saveTargetModal'),
+        targetWeightInput: document.getElementById('targetWeightInput'),
+        calorieCapInput: document.getElementById('calorieCapInput'),
+        proteinGoalInput: document.getElementById('proteinGoalInput'),
+        carbGoalInput: document.getElementById('carbGoalInput'),
+        fatGoalInput: document.getElementById('fatGoalInput'),
+        journalList: document.getElementById('journalList'),
+        waterGlassBox: document.getElementById('waterGlassBox'),
+        increaseWaterBtn: document.getElementById('increaseWaterBtn'),
+        decreaseWaterBtn: document.getElementById('decreaseWaterBtn'),
+        calorieProgressBar: document.getElementById('calorieProgressBar'),
+        calorieProgressText: document.getElementById('calorieProgressText'),
+        proteinMacroBar: document.getElementById('proteinMacroBar'),
+        carbsMacroBar: document.getElementById('carbsMacroBar'),
+        fatsMacroBar: document.getElementById('fatsMacroBar'),
+        proteinMacroText: document.getElementById('proteinMacroText'),
+        carbsMacroText: document.getElementById('carbsMacroText'),
+        fatsMacroText: document.getElementById('fatsMacroText'),
+        netCalories: document.getElementById('netCalories'),
+        macroValue: document.getElementById('macroValue'),
+        waterCount: document.getElementById('waterCount'),
+        waterText: document.getElementById('waterText'),
+        consistencyFill: document.getElementById('consistencyFill'),
+        metricSteps: document.getElementById('metricSteps'),
+        metricWorkout: document.getElementById('metricWorkout'),
+        metricGoal: document.getElementById('metricGoal'),
+        dailyScore: document.getElementById('dailyScore'),
+        tinyBadgeOne: document.getElementById('tinyBadgeOne'),
+        tinyBadgeTwo: document.getElementById('tinyBadgeTwo')
+      };
+
+      function setupFoodSelect() {
+        const groups = [...new Set(foodDatabase.map(item => item.group))];
+        const options = groups.map(group => {
+          const items = foodDatabase.filter(item => item.group === group);
+          const optionGroup = document.createElement('optgroup');
+          optionGroup.label = group;
+          items.forEach(item => {
+            const opt = document.createElement('option');
+            opt.value = item.name;
+            opt.textContent = `${item.name} (${item.calories} kcal)`;
+            optionGroup.appendChild(opt);
+          });
+          return optionGroup;
+        });
+
+        options.forEach(group => els.foodSelect.appendChild(group));
+      }
+
+      function addFoodEntry() {
+        const selectedName = els.foodSelect.value;
+        const item = foodDatabase.find(entry => entry.name === selectedName);
+        if (!item) return;
+
+        state.entries.push({
+          id: crypto.randomUUID(),
+          type: 'food',
+          label: item.name,
+          calories: item.calories,
+          protein: item.protein,
+          carbs: item.carbs,
+          fats: item.fats
+        });
+        renderJournal();
+      }
+
+      function addBeverageEntry() {
+        const key = els.beverageSelect.value;
+        const item = beverageMap[key];
+        if (!item) return;
+
+        state.entries.push({
+          id: crypto.randomUUID(),
+          type: 'beverage',
+          label: item.label,
+          calories: item.calories,
+          protein: item.protein,
+          carbs: item.carbs,
+          fats: item.fats
+        });
+        renderJournal();
+      }
+
+      function recalcWorkoutBurn() {
+        const workoutType = els.workoutSelect.value;
+        const duration = Number(els.durationInput.value) || 0;
+        const met = workoutMet[workoutType] || 3;
+        const weightKg = Number(state.targetWeight) || 62;
+        const estimated = (duration * met * 3.5 * weightKg) / 200;
+        const round = Math.round(estimated);
+        els.calcBurn.value = `${round} kcal`;
+      }
+
+      function addWorkoutEntry() {
+        const workoutType = els.workoutSelect.value;
+        const duration = Number(els.durationInput.value) || 0;
+        if (duration <= 0) return;
+
+        recalcWorkoutBurn();
+        const burned = Number(els.calcBurn.value.replace(/\D/g, '')) || 0;
+
+        state.entries.push({
+          id: crypto.randomUUID(),
+          type: 'workout',
+          label: `${workoutType} (${duration} min)`,
+          calories: -burned,
+          protein: 0,
+          carbs: 0,
+          fats: 0
+        });
+
+        renderJournal();
+      }
+
+      function getTotals() {
+        const totals = { calories: 0, protein: 0, carbs: 0, fats: 0, burned: 0 };
+
+        state.entries.forEach(entry => {
+          totals.calories += Number(entry.calories) || 0;
+          totals.protein += Number(entry.protein) || 0;
+          totals.carbs += Number(entry.carbs) || 0;
+          totals.fats += Number(entry.fats) || 0;
+          if (entry.type === 'workout') {
+            totals.burned += Math.abs(Number(entry.calories) || 0);
+          }
+        });
+
+        return totals;
+      }
+
+      function renderJournal() {
+        const totals = getTotals();
+        const netCalories = Math.max(0, totals.calories - totals.burned);
+
+        const barPct = Math.min((netCalories / state.calorieCap) * 100, 100);
+        els.calorieProgressBar.style.width = `${Math.min(barPct, 100)}%`;
+        els.calorieProgressText.textContent = `${Math.round((netCalories / state.calorieCap) * 100)}% of cap`;
+        els.netCalories.textContent = `${netCalories}`;
+
+        const macroTotal = totals.protein + totals.carbs + totals.fats;
+        const proteinPct = state.goals.protein ? Math.min((totals.protein / state.goals.protein) * 100, 100) : 0;
+        const carbsPct = state.goals.carbs ? Math.min((totals.carbs / state.goals.carbs) * 100, 100) : 0;
+        const fatsPct = state.goals.fats ? Math.min((totals.fats / state.goals.fats) * 100, 100) : 0;
+
+        els.proteinMacroBar.style.width = `${proteinPct}%`;
+        els.carbsMacroBar.style.width = `${carbsPct}%`;
+        els.fatsMacroBar.style.width = `${fatsPct}%`;
+        els.proteinMacroText.textContent = `${Math.round(totals.protein)}/${state.goals.protein}g`;
+        els.carbsMacroText.textContent = `${Math.round(totals.carbs)}/${state.goals.carbs}g`;
+        els.fatsMacroText.textContent = `${Math.round(totals.fats)}/${state.goals.fats}g`;
+
+        const macroGoalPercent = macroTotal > 0 ? Math.min((totals.protein + totals.carbs + totals.fats) / (state.goals.protein + state.goals.carbs + state.goals.fats) * 100, 100) : 0;
+        els.macroValue.textContent = `${Math.round(macroGoalPercent)}%`;
+
+        els.waterCount.textContent = `${state.waterGlasses}/8`;
+        els.waterText.textContent = `${state.waterGlasses} glasses`;
+        const glasses = Array.from({ length: 8 }, (_, idx) => {
+          const glass = document.createElement('div');
+          glass.className = `glass ${idx < state.waterGlasses ? 'active' : ''}`;
+          glass.title = `Glass ${idx + 1}`;
+          return glass;
+        });
+        els.waterGlassBox.innerHTML = '';
+        glasses.forEach(glass => els.waterGlassBox.appendChild(glass));
+
+        const score = Math.min(100, Math.round((1 - Math.abs(netCalories - state.calorieCap) / state.calorieCap) * 100 + (state.waterGlasses / 8) * 20));
+        els.dailyScore.textContent = `${Math.max(0, Math.min(100, score))}`;
+        els.metricSteps.textContent = `${Math.min(12, Math.round((state.waterGlasses * 1.2 + netCalories / 200) + 6))}k`;
+        els.metricWorkout.textContent = `${Math.min(90, Math.round((totals.burned / 4) + 12))}m`;
+        els.metricGoal.textContent = `${Math.min(100, Math.round((netCalories / state.calorieCap) * 100 + 20))}%`;
+        els.consistencyFill.style.width = `${Math.min(100, Math.max(0, (state.waterGlasses / 8) * 100 + (score / 2)))}%`;
+
+        const badgeText = state.waterGlasses >= 6 ? 'Hydrated' : state.waterGlasses >= 3 ? 'Steady' : 'Boost water';
+        els.tinyBadgeTwo.textContent = badgeText;
+        els.tinyBadgeOne.textContent = `${Math.max(0, Math.round(state.targetWeight - (state.targetWeight * 0.02 + 0.4)))} kg`;
+
+        els.journalList.innerHTML = '';
+
+        state.entries.forEach(entry => {
+          const row = document.createElement('div');
+          row.className = 'journal-item';
+
+          const text = document.createElement('div');
+          text.className = 'journal-main';
+          const label = document.createElement('strong');
+          label.textContent = entry.label;
+          const meta = document.createElement('span');
+          meta.textContent = `${entry.type === 'workout' ? 'Workout' : entry.type === 'beverage' ? 'Beverage' : 'Food'} • ${entry.calories >= 0 ? '+' : ''}${entry.calories} kcal`;
+          text.append(label, meta);
+
+          const right = document.createElement('div');
+          right.className = 'journal-meta';
+
+          const tag = document.createElement('div');
+          tag.className = 'macro-tag';
+          tag.textContent = `${entry.type === 'workout' ? 'Burn' : 'Entry'}`;
+
+          const deleteBtn = document.createElement('button');
+          deleteBtn.className = 'delete-btn';
+          deleteBtn.textContent = '×';
+          deleteBtn.addEventListener('click', () => {
+            state.entries = state.entries.filter(item => item.id !== entry.id);
+            renderJournal();
+          });
+
+          right.append(tag, deleteBtn);
+          row.append(text, right);
+          els.journalList.appendChild(row);
+        });
+      }
+
+      function openTargetModal() {
+        els.targetWeightInput.value = state.targetWeight;
+        els.calorieCapInput.value = state.calorieCap;
+        els.proteinGoalInput.value = state.goals.protein;
+        els.carbGoalInput.value = state.goals.carbs;
+        els.fatGoalInput.value = state.goals.fats;
+        els.targetModal.classList.add('open');
+      }
+
+      function closeTargetModal() {
+        els.targetModal.classList.remove('open');
+      }
+
+      function saveTargets() {
+        state.targetWeight = Number(els.targetWeightInput.value) || 62;
+        state.calorieCap = Number(els.calorieCapInput.value) || 2100;
+        state.goals.protein = Number(els.proteinGoalInput.value) || 140;
+        state.goals.carbs = Number(els.carbGoalInput.value) || 220;
+        state.goals.fats = Number(els.fatGoalInput.value) || 60;
+        closeTargetModal();
+        renderJournal();
+      }
+
+      function setWater(glassCount) {
+        state.waterGlasses = Math.max(0, Math.min(8, glassCount));
+        renderJournal();
+      }
+
+      els.openTargetModal.addEventListener('click', openTargetModal);
+      els.closeTargetModal.addEventListener('click', closeTargetModal);
+      els.cancelTargetModal.addEventListener('click', closeTargetModal);
+      els.saveTargetModal.addEventListener('click', saveTargets);
+      els.targetModal.addEventListener('click', (event) => {
+        if (event.target === els.targetModal) closeTargetModal();
+      });
+
+      els.addFoodBtn.addEventListener('click', addFoodEntry);
+      els.addBeverageBtn.addEventListener('click', addBeverageEntry);
+      els.addWorkoutBtn.addEventListener('click', addWorkoutEntry);
+      els.durationInput.addEventListener('input', recalcWorkoutBurn);
+      els.workoutSelect.addEventListener('change', recalcWorkoutBurn);
+
+      els.increaseWaterBtn.addEventListener('click', () => setWater(state.waterGlasses + 1));
+      els.decreaseWaterBtn.addEventListener('click', () => setWater(state.waterGlasses - 1));
+
+      setupFoodSelect();
+      recalcWorkoutBurn();
+      renderJournal();
+    </script>
+  </body>
+</html>
